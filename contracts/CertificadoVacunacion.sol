@@ -11,29 +11,29 @@ struct Dosis {
 
 contract CertificadoVacunacion is AccessControl {
 
-    bytes32 internal constant ROL_VACUNADOR = keccak256("ROL_VACUNADOR");
+    bytes32 internal constant ROL_APLICADOR = keccak256("ROL_APLICADOR");
     bytes32 internal constant ROL_ADMIN = keccak256("ROL_ADMIN");
 
     mapping(address => Dosis[]) internal aplicacionesDosis;
 
     constructor() {
         _setRoleAdmin(ROL_ADMIN, ROL_ADMIN);
-        _setRoleAdmin(ROL_VACUNADOR, ROL_ADMIN);
+        _setRoleAdmin(ROL_APLICADOR, ROL_ADMIN);
 
         // el administrador será la cuenta que deploye el contrato
         _setupRole(ROL_ADMIN, msg.sender);
     }
 
-    function agregarVacunador(address vacunador) public {
-        grantRole(ROL_VACUNADOR, vacunador);
+    function agregarAplicador(address aplicador) public {
+        grantRole(ROL_APLICADOR, aplicador);
     }
 
-    function eliminarVacunador(address vacunador) public {
-        revokeRole(ROL_VACUNADOR, vacunador);
+    function eliminarAplicador(address aplicador) public {
+        revokeRole(ROL_APLICADOR, aplicador);
     }
 
-    // para aplicar una dosis hay que ser vacunador
-    function aplicarDosis(address persona, string memory _sede, uint256 _fecha, string memory _marcaVacuna) public esVacunador {
+    // para aplicar una dosis hay que ser aplicador
+    function aplicarDosis(address persona, string memory _sede, uint256 _fecha, string memory _marcaVacuna) public esAplicador {
         (aplicacionesDosis[persona]).push(Dosis(_sede, _fecha, _marcaVacuna));
     }
 
@@ -46,8 +46,8 @@ contract CertificadoVacunacion is AccessControl {
         return(aplicacionesDosis[persona]);
     }
 
-    modifier esVacunador {
-        require(hasRole(ROL_VACUNADOR, msg.sender), "solo permitido para vacunadores registrados");
+    modifier esAplicador {
+        require(hasRole(ROL_APLICADOR, msg.sender), "solo permitido para aplicadores registrados");
         _;
     }
 
