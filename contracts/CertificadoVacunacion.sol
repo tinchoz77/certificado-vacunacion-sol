@@ -1,8 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "./Dosis.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+
+struct Dosis {
+    string sede;
+    uint256 fecha;
+    string marcaVacuna;
+}
 
 contract CertificadoVacunacion is AccessControl {
 
@@ -17,7 +22,6 @@ contract CertificadoVacunacion is AccessControl {
 
         // el administrador será la cuenta que deploye el contrato
         _setupRole(ROL_ADMIN, msg.sender);
-        
     }
 
     function agregarVacunador(address vacunador) public {
@@ -29,21 +33,26 @@ contract CertificadoVacunacion is AccessControl {
     }
 
     // para aplicar una dosis hay que ser vacunador
-    function aplicarDosis(string memory _sede, uint256 _fecha, string memory _marcaVacuna) public esVacunador {
-        (aplicacionesDosis[msg.sender]).push(Dosis(_sede, _fecha, _marcaVacuna));
+    function aplicarDosis(address persona, string memory _sede, uint256 _fecha, string memory _marcaVacuna) public esVacunador {
+        (aplicacionesDosis[persona]).push(Dosis(_sede, _fecha, _marcaVacuna));
     }
 
-    function obtenerAplicacionDosis(address persona, uint8 nroDosis) public view returns(Dosis memory) {
+    // para consultar la información de las dosis sólo lo puede hacer la misma persona vacunada
+    function obtenerAplicacionDosis(address persona, uint8 nroDosis) public view esPropietarioCertificado(persona) returns(Dosis memory)  {
         return((aplicacionesDosis[persona])[nroDosis]);
     }
 
-    function obtenerAplicaciones(address persona) public view returns(Dosis[] memory) {
+    function obtenerAplicaciones(address persona) public view esPropietarioCertificado(persona) returns(Dosis[] memory)  {
         return(aplicacionesDosis[persona]);
     }
 
     modifier esVacunador {
-        require(hasRole(ROL_VACUNADOR, msg.sender));
+        require(hasRole(ROL_VACUNADOR, msg.sender), "solo permitido para vacunadores registrados");
         _;
     }
 
+    modifier esPropietarioCertificado(address persona) {
+        require(msg.sender == persona, "solo permitido para el propietario del certificado");
+        _;
+    }
 }
