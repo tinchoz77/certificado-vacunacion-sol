@@ -34,7 +34,9 @@ contract CertificadoVacunacion is AccessControl {
 
     // para aplicar una dosis hay que ser aplicador
     function aplicarDosis(address persona, string memory _sede, uint256 _fecha, string memory _marcaVacuna) public esAplicador {
-        (aplicacionesDosis[persona]).push(Dosis(_sede, _fecha, _marcaVacuna));
+        Dosis memory dosis = Dosis(_sede, _fecha, _marcaVacuna);
+        (aplicacionesDosis[persona]).push(dosis);
+        emit dosisAplicada(msg.sender, persona, dosis);
     }
 
     // para consultar la información de las dosis sólo lo puede hacer la misma persona vacunada
@@ -45,6 +47,9 @@ contract CertificadoVacunacion is AccessControl {
     function obtenerAplicaciones(address persona) public view esPropietarioCertificado(persona) returns(Dosis[] memory)  {
         return(aplicacionesDosis[persona]);
     }
+
+    // se dispara cada vez que una nueva dosis se aplica
+    event dosisAplicada(address aplicador, address persona, Dosis dosis);
 
     modifier esAplicador {
         require(hasRole(ROL_APLICADOR, msg.sender), "solo permitido para aplicadores registrados");
