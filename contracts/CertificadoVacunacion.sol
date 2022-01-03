@@ -3,13 +3,13 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-struct Dosis {
-    string sede;
-    uint256 fecha;
-    string marcaVacuna;
-}
-
 contract CertificadoVacunacion is AccessControl {
+
+    struct Dosis {
+        string sede;
+        uint256 fecha;
+        string marcaVacuna;
+    }
 
     bytes32 internal constant ROL_APLICADOR = keccak256("ROL_APLICADOR");
     bytes32 internal constant ROL_ADMIN = keccak256("ROL_ADMIN");
