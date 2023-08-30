@@ -4,6 +4,7 @@ pragma solidity >=0.4.22 <0.9.0;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 // TODO: Que la dosis guarde la localización geográfica de la aplicación para poder armar un mapa de densidad
+// Revision 1.1
 
 /// @title Almacenamiento anónimo de la información relativa a la vacunación contra COVID
 /// @author Martín Zavala
